@@ -11,3 +11,27 @@ export const reqVerifyPhone = (phone) => {
     }
   })
 }
+
+export const reqVerifyCode = (phone, code) => {
+  return request({
+    method: "POST",
+    url: `${url_prefix}/verify_code`,
+    data: {
+      phone,
+      code,
+    },
+  });
+};
+
+export const reqRegistUser = (phone, password) => {
+  console.log(1111)
+  return request({
+    
+    method: "POST",
+    url: `${url_prefix}/user`,
+    data: {
+      phone,
+      password,
+    },
+  });
+};

@@ -1,5 +1,6 @@
 // 封装axios，定义拦截器
 import axios from 'axios'
+import { Toast } from 'antd-mobile';
 
 const messages = {
   401: "没有权限",
@@ -65,7 +66,8 @@ request.interceptors.response.use(
       }
     }
 
-    return Promise.reject(message);
+    Toast.fail(message,3)
+    return Promise.reject('fail');
   }
 )
 

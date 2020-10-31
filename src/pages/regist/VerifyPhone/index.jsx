@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { NavBar, Icon, InputItem, WingBlank, Modal, Toast } from "antd-mobile";
 import { createForm } from "rc-form";
 import { reqVerifyPhone } from "@api/regist";
+import { reqSendCode } from "@api/login";
 
 import VerifyButton from "@comps/VerifyButton";
 
@@ -59,6 +60,26 @@ class VerifyPhone extends Component {
     callback();
   };
 
+  // 发送验证码
+  sendCode = (phone) => {
+    Modal.alert("", `我们将发送短信/语音验证码至：${phone}`, [
+      {
+        text: "取消",
+        // onPress: () => console.log("cancel"),
+      },
+      {
+        text: "确定",
+        style: { backgroundColor: "red", color: "#fff" },
+        onPress: async () => {
+          // 发送请求 请求短信验证码
+          await reqSendCode(phone);
+
+          this.props.history.push("/regist/verifycode",phone);
+        },
+      },
+    ]);
+  }
+
   // 验证用户手机号是否注册过
   verifyPhone = async () => {
     try {
@@ -71,16 +92,25 @@ class VerifyPhone extends Component {
       console.log("success");
       // 请求成功 - 手机号不存在
       // 提示弹框 - 确认请求短信验证码
+      this.sendCode(phone);
     } catch (e) {
+      if (e === 'fail') return
       // 请求失败 - 手机号存在
       Toast.fail(e, 3);
     }
   };
 
+  goCountryPicker = () => {
+    this.props.history.push("/common/countrypicker", "/regist/verifyphone");
+  };
+
+
   render() {
     const { isDisabled } = this.state;
     // form属性：由createForm高阶组件传递而来
     const { getFieldProps } = this.props.form;
+
+    const number = this.props.location.state || "+86";
 
     return (
       <div>
@@ -101,8 +131,9 @@ class VerifyPhone extends Component {
               clear
               placeholder="请输入手机号"
             >
-              <div className="verify-phone-prefix">
-                <span>+86</span>
+              <div className="verify-phone-prefix"
+              onTouchEnd={this.goCountryPicker}>
+                <span>{number}</span>
                 <Icon type="down" />
               </div>
             </InputItem>
